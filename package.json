@@ -1,0 +1,41 @@
+{
+  "name": "node-project",
+  "version": "1.0.0",
+  "description": "Basic api",
+  "main": "bin\\www",
+  "bin": {
+    "node-project": "config.js"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx}\""
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "prettier": "^1.16.4"
+  },
+  "dependencies": {
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "json2csv": "^4.5.2",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.6",
+    "morgan": "~1.9.0",
+    "node-cron": "^2.0.3",
+    "nodemailer": "^6.4.2",
+    "request": "^2.88.0",
+    "shortid": "^2.2.15",
+    "uuid": "^3.3.2",
+    "winston": "^3.1.0",
+    "fs": "0.0.1-security",
+    "convert-excel-to-json": "^1.6.1",
+    "winston-daily-rotate-file": "^3.6.0"
+  }
+}
