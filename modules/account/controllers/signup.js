@@ -1,85 +1,54 @@
-const {
-    serviceCaller,
-    serviceOptions,
-    asyncMongoose,
-    mongoClient,
-  } = require('../../utils');
-  const { UserModel } = require('../../models');
-  const { createSignupDocs } = require('../utils');
-  
-  async function signup(payload) {
-    // -------------------  1. Check user is registered or not
-    const userDoc = await asyncMongoose.findOneDoc(
+const uuid = require('uuid/v1');
+const { User, Session } = require('../../models');
+const { mongooseAsync, tokenService } = require('../../utils');
+const { hashData } = require('../../../utils/crypto');
+
+async function signUp(userDetails) {
+  console.log(userDetails);
+  const newUserCheck = await mongooseAsync.findOneDoc(
+    {
+      userName: userDetails.userName,
+    },
+    User,
+  );
+  if (newUserCheck) {
+    logger.info(`exisiting user ${userDetails.userName}`);
+    throw new Error('USER_EXISTS');
+  } else {
+    logger.info(`new user ${userDetails.mobile}`);
+
+    // saving document in db
+    const saveObj = {
+      mobile: userDetails.mobile,
+      userName: userDetails.userName,
+      userId: uuid(),
+      password: await hashData(userDetails.password),
+      email: userDetails.email,
+      alterMobile: userDetails.alterMobile,
+      alterEmail: userDetails.alterEmail
+    };
+
+    console.log('saveObj', saveObj);
+    await mongooseAsync.saveDoc(new User(saveObj));
+    const query = { userId: saveObj.userId }
+    const token = await tokenService.sign(query);
+    const findSession = await mongooseAsync.findOneDoc(
       {
-        $or: [{ mobile: payload.mobile }, { email: payload.email }],
+        userId: saveObj.userId
       },
-      UserModel,
-      { userId: 1 },
+      Session,
     );
-    if (userDoc) {
-      throw new Error('EMAIL_MOBILE_INUSE');
+    if (!findSession) {
+      console.log('findSession', findSession);
+      const sessionDoc = {
+        userId: saveObj.userId,
+        token: token
+      }
+      await mongooseAsync.saveDoc(
+        new Session(sessionDoc)
+      );
     }
-  
-    // -------------------- 2. verify otp
-    const verifyOtpOptions = serviceOptions('messaging', 'verifyOtp', {
-      mobile: payload.countryCode + payload.mobile,
-      otp: payload.otp,
-    });
-    if (!global.isDev) {
-      await serviceCaller(verifyOtpOptions);
-    }
-    // --------------------3. init Signup
-    const initSignupOptions = serviceOptions('auth', 'initiateSignup', {
-      ...payload,
-      userId: payload.mobile,
-      app: global.config.appName,
-    });
-    const initData = await serviceCaller(initSignupOptions);
-  
-    const { mobile, email, deviceId, name } = payload;
-    const { userId, registered, setPassword } = initData.data;
-  
-    // --------------------3. complete Signup
-  
-    const completeSignUpOptions = serviceOptions('auth', 'signup', {
-      registered,
-      setPassword,
-      userId,
-      password: '',
-      mobile,
-      email,
-      deviceId,
-      status: 'active',
-      info: {},
-      app: global.config.appName,
-    });
-    const signupInfo = await serviceCaller(completeSignUpOptions);
-    // console.log(signupInfo);
-  
-    //  create local app data
-    const newUserDoc = createSignupDocs(payload, userId);
-  
-    const saveInfo = await asyncMongoose.saveDoc(newUserDoc);
-  
-    // console.log(saveInfo);
-    signupInfo.message = 'Sign up complete.';
-    return Promise.resolve(signupInfo);
+    return Promise.resolve(global.messages.success('USER_CREATED', '', {}));
   }
-  
-  async function validate(payload) {
-    // console.log(payload);
-    const userDoc = await asyncMongoose.findOneDoc(
-      {
-        $or: [{ mobile: payload.mobile }, { email: payload.email }],
-      },
-      UserModel,
-      { userId: 1 },
-    );
-    if (userDoc) {
-      throw new Error('EMAIL_MOBILE_INUSE');
-    }
-    return Promise.resolve({ message: 'success', type: 'success', data: {} });
-  }
-  
-  module.exports = { signup, validate };
-  
+}
+module.exports = { signUp };

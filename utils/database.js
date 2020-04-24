@@ -5,9 +5,7 @@ const connectedDbs = {};
 function registerCloseEvents(conn) {
   process.on('SIGINT', () => {
     conn.close(() => {
-      console.log(
-        'Mongoose default connection is disconnected due to application termination',
-      );
+      console.log('Mongoose default connection is disconnected due to application termination');
       process.exit(0);
     });
   });
@@ -15,42 +13,17 @@ function registerCloseEvents(conn) {
 
 async function connect() {
   return new Promise(async (resolve, reject) => {
-    // console.log('checking db connection');
+    console.log('checking db connection');
     let conn;
     try {
-      if (global.isDev) {
-        let connString = `mongodb://${this.url}`;
-        if (this.replUrl) {
-          connString = `${connString},${this.replUrl}`;
-        } else {
-          connString = `${connString}/${this.dbName}`;
-        }
-        // console.log('connString', connString);
-        conn = await mongoose.createConnection(connString, this.options);
-      } else {
-        conn = await mongoose.createConnection(
-          `mongodb://${this.url}/${this.dbName}?authSource=admin`,
-          this.options,
-        );
-      }
+      console.log("--->",this.url,this.dbName);
+      conn = await mongoose.createConnection(`mongodb://${this.url}/${this.dbName}?authSource=admin`, this.options);
     } catch (err) {
       reject(err);
     }
-    // try {
-    // let connString = `mongodb://${this.url}`;
-    // if (this.replUrl) {
-    //   connString = `${connString},${this.replUrl}`;
-    // } else {
-    //   connString = `${connString}/${this.dbName}`;
-    // }
-    // // console.log('connString', connString);
-    // conn = await mongoose.createConnection(connString, this.options);
-    // } catch (err) {
-    //   reject(err);
-    // }
     registerCloseEvents(conn);
     connectedDbs[this.name] = conn;
-    // console.log(`db connected : ${this.name}`);
+    console.log(`db connected : ${this.name}`);
     resolve();
   });
 }
@@ -68,7 +41,7 @@ class Database {
           reject(err);
         }
       }
-      // console.log(Object.keys(connectedDbs));
+      console.log(Object.keys(connectedDbs));
       resolve('done');
     });
   }

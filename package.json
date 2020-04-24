@@ -1,16 +1,15 @@
 {
-  "name": "node-project",
+  "name": "Node-project",
   "version": "1.0.0",
-  "description": "Basic api",
-  "main": "bin\\www",
+  "description": "for some data retrive",
+  "main": "app.js",
   "bin": {
-    "node-project": "config.js"
+    "stove_rove": "config.js"
   },
   "scripts": {
-    "lint": "eslint",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx}\""
+    "start": "nodemon ./bin/www"
   },
+  "author": "Rk",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.16.0",
@@ -25,6 +24,7 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "json2csv": "^4.5.2",
+    "jsonwebtoken": "8.4.0",
     "mongodb": "^3.1.13",
     "mongoose": "^5.4.6",
     "morgan": "~1.9.0",

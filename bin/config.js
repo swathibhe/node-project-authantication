@@ -1,58 +1,14 @@
-const appName = 'Node-project';
+const AppName = 'node-project';
 
 const config = {
   local: {
+    AppName,
     server: {
-      port: 3025,
+      port: 3026,
       hostname: '0.0.0.0',
     },
     app: {
-      appName,
-    },
-  },
-  dev: {
-    server: {
-      port: 3025,
-      hostname: '0.0.0.0',
-    },
-    app: {
-      appName,
-    },
-  },
-  prod: {
-    server: {
-      port: 3025,
-      hostname: '0.0.0.0',
-    },
-    app: {
-      appName,
-    },
-  },
-  stage: {
-    server: {
-      port: 3025,
-      hostname: '0.0.0.0',
-    },
-    app: {
-      appName,
-    },
-  },
-  beta: {
-    server: {
-      port: 3025,
-      hostname: '0.0.0.0',
-    },
-    app: {
-      appName,
-    },
-  },
-  betav2: {
-    server: {
-      port: 3025,
-      hostname: '0.0.0.0',
-    },
-    app: {
-      appName,
+      secret : "n8vaRgP5VksWvNbgzDzzj6D5XFcRH3Tr"
     },
   },
 };
