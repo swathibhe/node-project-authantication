@@ -16,7 +16,6 @@ async function signUp(userDetails) {
     throw new Error('USER_EXISTS');
   } else {
     logger.info(`new user ${userDetails.mobile}`);
-
     // saving document in db
     const saveObj = {
       mobile: userDetails.mobile,
@@ -25,16 +24,16 @@ async function signUp(userDetails) {
       password: await hashData(userDetails.password),
       email: userDetails.email,
       alterMobile: userDetails.alterMobile,
-      alterEmail: userDetails.alterEmail
+      alterEmail: userDetails.alterEmail,
     };
 
     console.log('saveObj', saveObj);
     await mongooseAsync.saveDoc(new User(saveObj));
-    const query = { userId: saveObj.userId }
-    const token = await tokenService.sign(query);
+    const query = { userId: saveObj.userId };
+    const tokenD = await tokenService.sign(query);
     const findSession = await mongooseAsync.findOneDoc(
       {
-        userId: saveObj.userId
+        userId: saveObj.userId,
       },
       Session,
     );
@@ -42,10 +41,10 @@ async function signUp(userDetails) {
       console.log('findSession', findSession);
       const sessionDoc = {
         userId: saveObj.userId,
-        token: token
-      }
+        token: tokenD,
+      };
       await mongooseAsync.saveDoc(
-        new Session(sessionDoc)
+        new Session(sessionDoc),
       );
     }
     return Promise.resolve(global.messages.success('USER_CREATED', '', {}));

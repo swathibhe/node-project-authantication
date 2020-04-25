@@ -9,7 +9,7 @@
   "scripts": {
     "start": "nodemon ./bin/www"
   },
-  "author": "Rk",
+  "author": "swathi",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.16.0",
